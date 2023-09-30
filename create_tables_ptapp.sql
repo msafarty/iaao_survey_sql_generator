@@ -29,7 +29,7 @@ CREATE TABLE responses_categories
 GO
 
 CREATE TABLE sub_questions
-    ([questionnaire_id] int, [year] int, [question_id] int, [category_id] int, [sub_question_id] int, [sub_question] varchar(64), [category_id] int)
+    ([questionnaire_id] int, [year] int, [question_id] int, [category_id] int, [sub_question_id] int, [sub_question] varchar(64))
 GO
     
 CREATE TABLE jurisdictions
