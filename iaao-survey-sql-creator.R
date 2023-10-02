@@ -1,26 +1,37 @@
 library(readxl)
 library(dplyr)
-data<-readxl::read_excel('2017_PTAPP-web (1).xlsx', sheet = 1)
+# data<-readxl::read_excel('2017_PTAPP-web (1).xlsx', sheet = 1)
+# data<-readxl::read_excel('2017_PTAPP-web-withJPTAA.xlsx', )
+
+# data1<-readxl::read_excel('2017_PTAPP-web (1).xlsx', sheet = 1)
+# data2<-readxl::read_excel('2017_PTAPP-web (1).xlsx', sheet = 2)
+# data3<-readxl::read_excel('2017_PTAPP-web (1).xlsx', sheet = 3)
+# data4<-readxl::read_excel('2017_PTAPP-web (1).xlsx', sheet = 4)
+
+data1<-readxl::read_excel('2017_PTAPP-web-withJPTAA.xlsx', sheet = 1)
+data2<-readxl::read_excel('2017_PTAPP-web-withJPTAA.xlsx', sheet = 2)
+data3<-readxl::read_excel('2017_PTAPP-web-withJPTAA.xlsx', sheet = 3)
+data4<-readxl::read_excel('2017_PTAPP-web-withJPTAA.xlsx', sheet = 4)
 
 
-data1<-readxl::read_excel('2017_PTAPP-web (1).xlsx', sheet = 1)
-data2<-readxl::read_excel('2017_PTAPP-web (1).xlsx', sheet = 2)
-data3<-readxl::read_excel('2017_PTAPP-web (1).xlsx', sheet = 3)
-data4<-readxl::read_excel('2017_PTAPP-web (1).xlsx', sheet = 4)
+#data2$...68[67] #testing to see if lengthy response is truncated
+
 # data <- cbind(data1,data2,data3,data4)
 #not perfect because we are not auto looking up the values for category/subquestion, but we can enter them into function args and still be a lot more efficient than previous method
 generateSql <- function(dataset, qnum, colnum, category, subQ) {
   sqlText <- dataset %>% select(c(2,colnum+2)) %>% filter(!is.na(`...2`) )
   for (row in 1:nrow(sqlText)) {
-   print(paste0("(2, ", 1000+row, ", 2017, ",qnum, ", ", category, ", ", 
-                subQ,", '", sqlText[row,2], "'),"), quote = F)
+   cat(paste0("(2, ", 1000+row, ", 2017, ",qnum, ", ", category, ", ", 
+                subQ,", '", sqlText[row,2], "'),\n"))#, quote = F)
   }                
 }
+
+sink("insertResponsesDetailed.txt") #wow cool function thank you Mr. ChatGPT
 generateSql(data1, 2, 1, 'NULL','NULL')
 generateSql(data1, 3, 2, 'NULL','NULL')
 generateSql(data1, 4, 3, 'NULL', 10001)
 generateSql(data1, 4, 4, 'NULL', 10002)
-generateSql(data1, 4, 5, 'NULL', 10003) #previously commented out
+generateSql(data1, 4, 5, 'NULL', 10003) 
 generateSql(data1, 5, 6, 'NULL', 10004)
 generateSql(data1, 5, 7, 'NULL', 10005)
 generateSql(data1, 5, 8, 'NULL', 10006)
@@ -37,7 +48,7 @@ generateSql(data1, 5, 18, 'NULL', 10016)
 generateSql(data1, 5, 19, 'NULL', 10017)
 generateSql(data1, 5, 20, 'NULL', 10018)
 generateSql(data1, 5, 21, 'NULL', 10019)
-generateSql(data1, 5, 22, 'NULL', 10020) #5,22 "see appendix"
+generateSql(data1, 5, 22, 'NULL', 10020)
 generateSql(data1, 6, 23, 'NULL', 'NULL')
 generateSql(data1, 7, 24, 'NULL', 'NULL')
 generateSql(data1, 8, 25, 'NULL', 10021)
@@ -60,10 +71,10 @@ generateSql(data1, 8, 41, 'NULL', 10037)
 generateSql(data1, 8, 42, 'NULL', 10038)
 generateSql(data1, 8, 43, 'NULL', 10039)
 generateSql(data1, 8, 44, 'NULL', 10040)
-generateSql(data1, 8, 45, 'NULL', 10041) #45 see appendix
+generateSql(data1, 8, 45, 'NULL', 10041)
 generateSql(data1, 9, 46, 'NULL', 10042)
 generateSql(data1, 9, 47, 'NULL', 10043)
-generateSql(data1, 9, 48, 'NULL', 10044) #48 see appendix
+generateSql(data1, 9, 48, 'NULL', 10044)
 generateSql(data1, 10, 49, 'NULL', 10045)
 generateSql(data1, 10, 50, 'NULL', 10046)
 generateSql(data1, 10, 51, 'NULL', 10047)
@@ -74,7 +85,7 @@ generateSql(data1, 10, 55, 'NULL', 10051)
 generateSql(data1, 10, 56, 'NULL', 10052)
 generateSql(data1, 10, 57, 'NULL', 10053)
 generateSql(data1, 10, 58, 'NULL', 10054)
-generateSql(data1, 10, 59, 'NULL', 10055) #59 see appendix
+generateSql(data1, 10, 59, 'NULL', 10055)
 #excel question 11 on separate sheet
 generateSql(data2, 11, 2, 'NULL', 10056)
 generateSql(data2, 11, 3, 'NULL', 10057)
@@ -400,3 +411,4 @@ generateSql(data4, 43, 71, 'NULL', 10370)
 generateSql(data4, 43, 72, 'NULL', 10371)
 generateSql(data4, 43, 73, 'NULL', 10372)
 generateSql(data4, 43, 74, 'NULL', 10373)
+sink()
