@@ -1356,6 +1356,8 @@ VALUES
 	(2, 2017, 18, NULL, 10104, 'All property assessment records defined by law are accessible'),
 	(2, 2017, 18, NULL, 10105, 'The procedure or availability of data varies between jurisdictions'),
 	(2, 2017, 18, NULL, 10106, 'Controls vary among local jurisdictions	State/Province maintains links to local assessment jurisdiction websites'),
+	(2, 2017, 18, NULL, 10107, 'State/Province maintains links to local assessment jurisdiction websites'),
+--NEED TO RENUMBER:
 	(2, 2017, 18, NULL, 10107, 'If there are other controls on access (e.g., paper only) please indicate the controls.'),
 	(2, 2017, 19, NULL, 10108, 'Confidentiality Law changes'),
 	(2, 2017, 19, NULL, 10109, 'If yes, please describe the changes and cite relevant statutes if possible.'),

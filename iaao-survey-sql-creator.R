@@ -1,23 +1,15 @@
+#dependencies
 library(readxl)
 library(dplyr)
-# data<-readxl::read_excel('2017_PTAPP-web (1).xlsx', sheet = 1)
-# data<-readxl::read_excel('2017_PTAPP-web-withJPTAA.xlsx', )
-
-# data1<-readxl::read_excel('2017_PTAPP-web (1).xlsx', sheet = 1)
-# data2<-readxl::read_excel('2017_PTAPP-web (1).xlsx', sheet = 2)
-# data3<-readxl::read_excel('2017_PTAPP-web (1).xlsx', sheet = 3)
-# data4<-readxl::read_excel('2017_PTAPP-web (1).xlsx', sheet = 4)
-
+#break out into separate spreadsheets (load version with JPTAA context manually added in)
 data1<-readxl::read_excel('2017_PTAPP-web-withJPTAA.xlsx', sheet = 1)
 data2<-readxl::read_excel('2017_PTAPP-web-withJPTAA.xlsx', sheet = 2)
 data3<-readxl::read_excel('2017_PTAPP-web-withJPTAA.xlsx', sheet = 3)
 data4<-readxl::read_excel('2017_PTAPP-web-withJPTAA.xlsx', sheet = 4)
-
-
+#test to see if we truncate lengthy responses
 #data2$...68[67] #testing to see if lengthy response is truncated
 
-# data <- cbind(data1,data2,data3,data4)
-#not perfect because we are not auto looking up the values for category/subquestion, but we can enter them into function args and still be a lot more efficient than previous method
+#create SQL generation function based on data structure
 generateSql <- function(dataset, qnum, colnum, category, subQ) {
   sqlText <- dataset %>% select(c(2,colnum+2)) %>% filter(!is.na(`...2`) )
   for (row in 1:nrow(sqlText)) {
@@ -26,6 +18,7 @@ generateSql <- function(dataset, qnum, colnum, category, subQ) {
   }                
 }
 
+# Open text file, write function output into it without R idiosyncrasies forcing us to use text replace
 sink("insertResponsesDetailed.txt") #wow cool function thank you Mr. ChatGPT
 generateSql(data1, 2, 1, 'NULL','NULL')
 generateSql(data1, 3, 2, 'NULL','NULL')
