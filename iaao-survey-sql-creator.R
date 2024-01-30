@@ -9,6 +9,20 @@ data4<-readxl::read_excel('2017_PTAPP-web-withJPTAA.xlsx', sheet = 4)
 #test to see if we truncate lengthy responses
 #data2$...68[67] #testing to see if lengthy response is truncated
 
+#escape apostrophes that may be found in the Excel data; this will mess up SQL
+data1 <- data.frame(lapply(data1, function(x) {
+  gsub("'","''",x)
+}))
+data2 <- data.frame(lapply(data2, function(x) {
+  gsub("'","''",x)
+}))
+data3 <- data.frame(lapply(data3, function(x) {
+  gsub("'","''",x)
+}))
+data4 <- data.frame(lapply(data4, function(x) {
+  gsub("'","''",x)
+}))
+
 #create SQL generation function based on data structure
 generateSql <- function(dataset, qnum, colnum, category, subQ) {
   sqlText <- dataset %>% select(c(2,colnum+2)) %>% filter(!is.na(`...2`) )
@@ -19,7 +33,8 @@ generateSql <- function(dataset, qnum, colnum, category, subQ) {
 }
 
 # Open text file, write function output into it without R idiosyncrasies forcing us to use text replace
-sink("insertResponsesDetailed.txt") #wow cool function thank you Mr. ChatGPT
+sink("insertResponsesDetailed.txt") 
+cat('INSERT INTO dbo.responses_detail')
 generateSql(data1, 2, 1, 'NULL','NULL')
 generateSql(data1, 3, 2, 'NULL','NULL')
 generateSql(data1, 4, 3, 'NULL', 10001)
