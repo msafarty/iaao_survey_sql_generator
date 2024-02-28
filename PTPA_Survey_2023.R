@@ -1,5 +1,6 @@
 library(dplyr)
-data <- read.csv('C:/Users/msafarty/Downloads/ptpa_sample_results.csv') %>% data.frame()
+library(readxl)
+data <- readxl::read_xlsx('PTPA_Responses_2-27.xlsx') %>% data.frame()
 #escape apostrophes that may be found in the Excel data; this will mess up SQL
 data <- data.frame(lapply(data, function(x) {
   gsub("'","''",x)
@@ -22,7 +23,7 @@ generateSql <- function(dataset, qnum, colnum, category, subQ) {
 # Open text file, write function output into it without R idiosyncrasies forcing us to use text replace
 ### had to add the multiple insert into statements to avoid sql server limit of 1000 inserts. also, one must manually remove the final comma in the last set of values before the next "insert into" statement. I think we may need to insert into SQL pre-tabularized data, or come up with something more elegant.
 ### NOTEPAD++ allows for replace over multiple lines, therefore can replace the phrase ",INSERT INTO" and remove the preceding commas for mass insert.
-sink("insertResponsesDetailed.txt") 
+sink("insertResponsesDetailed2023.txt") 
 cat('INSERT INTO dbo.responses_detail VALUES ')
 generateSql(data, 1, 10, '', 1)
 cat('INSERT INTO dbo.responses_detail VALUES ')
