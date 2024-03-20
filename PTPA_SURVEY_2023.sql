@@ -34,9 +34,9 @@ VALUES
 (2, 2023, 31, 31, 'Is there a fee or bond paid to appeal?'),
 (2, 2023, 32, 32, 'How many state/provincial/national property tax appeals were filed for state-assessed property, in your jurisdiction, in the past year?'),
 (2, 2023, 33, 33, 'Do the appeal board/council or tribunal members have formal training in property tax appeal rules or other prerequisite requirements?'),
-(2, 2023, 34, 34, 'What is the average time for initial appeals for locally-assessed property, after valuation notices are sent?')
+(2, 2023, 34, 34, 'What is the average time for initial appeals for locally-assessed property, after valuation notices are sent?'),
 (2, 2023, 35, 35, 'Are portions of records treated as confidential or restricted?'),
-(2, 2023, 36, 36, 'Are there fees for fulfillment of formal or statutorily mandated requests for information (such as Freedom of Information Act requests)?')
+(2, 2023, 36, 36, 'Are there fees for fulfillment of formal or statutorily mandated requests for information (such as Freedom of Information Act requests)?'),
 (2, 2023, 37, 37, 'Are there statutory limits to what information can be accessed by the public?'),
 (2, 2023, 38, 38, 'Have there been any recent changes in records confidentiality laws or practices?'),
 (2, 2023, 39, 39, 'Does your state/province place statutory limits on increases in assessed value in effect for any of the following property types or tax categories?'),
@@ -407,12 +407,12 @@ VALUES
 	(2, 2023, 44, NULL, 4, 'Property taxes are shifted to non-exempt property. Local units of government do not lose property tax revenue.'),
 	(2, 2023, 44, NULL, 5, 'Aid to local unit of government is increased to compensate for lost revenue (fully or partially).'),
 	(2, 2023, 44, NULL, 6, 'Other (please describe)'),
-	(2, 2023, 45, NULL, 1, 'No new major changes to exemptions')
-	(2, 2023, 45, NULL, 2, 'Elimination of existing exemption(s)')
-	(2, 2023, 45, NULL, 3, 'Reduction of existing exemption(s)')
-	(2, 2023, 45, NULL, 4, 'Expansion of existing exemption(s)')
-	(2, 2023, 45, NULL, 5, 'New major exemption(s) created')
-	(2, 2023, 45, NULL, 6, 'Please describe any major changes to exemptions.')
+	(2, 2023, 45, NULL, 1, 'No new major changes to exemptions'),
+	(2, 2023, 45, NULL, 2, 'Elimination of existing exemption(s)'),
+	(2, 2023, 45, NULL, 3, 'Reduction of existing exemption(s)'),
+	(2, 2023, 45, NULL, 4, 'Expansion of existing exemption(s)'),
+	(2, 2023, 45, NULL, 5, 'New major exemption(s) created'),
+	(2, 2023, 45, NULL, 6, 'Please describe any major changes to exemptions.'),
 	(2, 2023, 46, NULL, 1, 'No'),
 	(2, 2023, 46, NULL, 2, 'Yes: mandated at state level'),
 	(2, 2023, 46, NULL, 3, 'Yes: mandated at local level'),
@@ -430,7 +430,7 @@ VALUES
   (2, 2023, 47, NULL, 8, 'Yes: Veteran with Disability'),
   (2, 2023, 47, NULL, 9, 'Please describe any other residential circuit breakers, and any recent changes to existing programs.'),
   (2, 2023, 48, NULL, 1, '# of approved claims:'),
-  (2, 2023, 48, NULL, 2, 'Total tax relief, in your jurisdiction''s currency')
+  (2, 2023, 48, NULL, 2, 'Total tax relief, in your jurisdiction''s currency'),
   (2, 2023, 49, NULL, 1, 'Not applicable'),	
   (2, 2023, 49, NULL, 2, 'Age'),
   (2, 2023, 49, NULL, 3, 'Owner occupied'),
