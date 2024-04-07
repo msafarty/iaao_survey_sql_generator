@@ -1,7 +1,7 @@
 library(dplyr)
 library(readxl)
 library(stringr)
-data <- readxl::read_xlsx('PTPA_Responses_2-27.xlsx') %>% data.frame()
+data <- readxl::read_xlsx('PTPA Results 3-21-24.xlsx') %>% data.frame()
 #escape apostrophes that may be found in the Excel data; this will mess up SQL
 data <- data.frame(lapply(data, function(x) {
   gsub("'","''",x)
@@ -14,7 +14,7 @@ generateSql <- function(dataset, qnum, colnum, category, subQ) {
   subQ2 <- ifelse(subQ == '', 'NULL',subQ)
   # start at row 2 because row 1 doesnt represent a real response
   for (row in 2:nrow(dataset)) {
-    cat(paste0("(2, ", 1000+row, ", 2023, ",qnum, ", ", category2, ", ", 
+    cat(paste0("(2, ", 2000+row, ", 2023, ",qnum, ", ", category2, ", ", 
                subQ2,", '", dataset[row,colnum], "'),\n"))#, quote = F)
   }                
 }
@@ -35,7 +35,7 @@ generateSqlMerge <- function(dataset, qnum, colnum, colnumTotal, category, subQ)
     combinedResponse <- gsub("^,|,$", "", combinedResponse)
     
     
-    cat(paste0("(2, ", 1000+row, ", 2023, ",qnum, ", ", category2, ", ", 
+    cat(paste0("(2, ", 2000+row, ", 2023, ",qnum, ", ", category2, ", ", 
                subQ2,", '", combinedResponse, "'),\n"))#, quote = F)
   }                
 }
