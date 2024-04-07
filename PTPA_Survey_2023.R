@@ -6,6 +6,14 @@ data <- readxl::read_xlsx('PTPA Results 3-21-24.xlsx') %>% data.frame()
 data <- data.frame(lapply(data, function(x) {
   gsub("'","''",x)
 }))
+
+# unforunately, surveymonkey exports might change the ordering of results per export. So, safest thing to do is order data by the startDate column. After running this script, the endDate column can be used to choose the most recent/complete survey for any jurisdiction with multiple responses provided
+#_____ grab header row (could just remove this? already captured this data)
+data2 <- data[1,]
+#_____ sort non-header rows
+data3 <- data %>% dplyr::arrange(Start.Date) %>% dplyr::filter(!is.na(Respondent.ID))
+#_____ merge both together so that we maintain header row + sorted responses
+data <- rbind(data2, data3)
 # data[is.na(data)] <- ''
 
 #create SQL generation function based on data structure
