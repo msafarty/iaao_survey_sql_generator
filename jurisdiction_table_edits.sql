@@ -322,3 +322,19 @@ WHERE cross_survey_id = 76
 commit
 
 select * from #temp where cross_survey_id NOT IN (select cross_survey_id from dbo.jurisdictions where year = 2023)
+
+
+select * from dbo.jurisdictions order by cross_survey_id desc
+
+INSERT INTO dbo.jurisdictions (questionnaire_id, year, jurisdiction_name, jurisdiction_description, cross_survey_id)
+VALUES
+(2, 2023, 'Maine', 'Maine Revenue Services', 20),
+(2, 2023, 'Colorado', 'Division of Property Taxation', 6),
+(2, 2023, 'Nevada', 'Nevada Department of Taxation', 29),
+(2, 2023, 'Republic of Serbia', 'Republic Geodetic Authority', 77),
+(2, 2023, 'Quebec', 'Ministry of Municipal Affairs', 63),
+(2, 2023, 'New Hampshire', 'Department of Revenue Administration', 30),
+(2, 2023, 'Yukon', 'Property Assessment and Taxation', 65),
+(2, 2023, 'New York', 'Department of Taxation and Finance', 33),
+(2, 2023, 'New Mexico', 'Taxation & Revenue Department', 32),
+(2, 2023, 'Michigan', 'Department of Treasury', 23)

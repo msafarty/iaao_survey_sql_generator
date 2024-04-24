@@ -1320,7 +1320,7 @@ generateSql(data, 80, 758, '', 4)
 cat('INSERT INTO dbo.responses_detail VALUES ')
 generateSql(data, 80, 759, '', 5)
 
-sink()
+sink() #NEED TO EXCLUDE THE HEADER ROW AS IT GOT RESORTED TO THE LAST JURISDICTION ID AND PLACED IN RESPONSESDETAIL TXT FILE
 
 
 generateJurisdictionToCrossSurveyID <- function(dataset, colnum) {
