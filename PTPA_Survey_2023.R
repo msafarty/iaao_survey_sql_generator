@@ -1,7 +1,8 @@
 library(dplyr)
 library(readxl)
 library(stringr)
-data <- readxl::read_xlsx('041624_PTPA_Responses.xlsx') %>% data.frame()
+library(readr)
+data <- readxl::read_xlsx('051524_PTPA_Responses.xlsx') %>% data.frame()
 #escape apostrophes that may be found in the Excel data; this will mess up SQL
 data <- data.frame(lapply(data, function(x) {
   gsub("'","''",x)
@@ -95,7 +96,17 @@ data <- data %>% mutate(jurisdiction_id = case_when(
   Respondent.ID == 114553829962 ~ 77,
   Respondent.ID == 114430142765 ~ 68,
   Respondent.ID == 114434810712 ~ 73,
-  Respondent.ID == 114539993093 ~ 20
+  Respondent.ID == 114539993093 ~ 20,
+  Respondent.ID == 114438778150 ~ 56,
+  Respondent.ID == 114540174330 ~ 6,
+  Respondent.ID == 114584307020 ~ 26,
+  Respondent.ID == 114584326384 ~ 40,
+  Respondent.ID == 114588427610 ~ 62,
+  Respondent.ID == 114588585608 ~ 23,
+  Respondent.ID == 114588625531 ~ 36,
+  Respondent.ID == 114588666440 ~ 24,
+  Respondent.ID == 114594126073 ~ 47,
+  Respondent.ID == 114599084302 ~ 78
   )
 )
 need_jurisdiction_IDs <- data %>% filter(is.na(jurisdiction_id)) %>% filter(!is.na(Respondent.ID))
@@ -106,15 +117,14 @@ print('All survey responses have been assigned a jurisdiction_id')
 # Calculate the max start date per jurisdiction ID - consider this, being the most recent submission, as the best data. 
 maxStartDates <- data %>% dplyr::group_by(jurisdiction_id) %>% dplyr::summarise(Start.Date = max(Start.Date))
 # Inner join on the jurisdiction IDs and max start dates to grab the 'best data'
-data <- data %>% dplyr::inner_join(maxStartDates, by = c('jurisdiction_id', 'Start.Date'))
+data <- data %>% dplyr::inner_join(maxStartDates, by = c('jurisdiction_id', 'Start.Date')) %>% filter(!is.na(Respondent.ID))
 
 #create SQL generation function based on data structure
-#____ note: we will need to change for loops from 2:nrow to 1:nrow if we remove the first row "header"
 generateSql <- function(dataset, qnum, colnum, category, subQ) {
   category2 <- ifelse(category == '' , 'NULL',category)
   subQ2 <- ifelse(subQ == '', 'NULL',subQ)
   # start at row 2 because row 1 doesnt represent a real response
-  for (row in 2:nrow(dataset)) {
+  for (row in 1:nrow(dataset)) {
     cat(paste0("(2, ", 2000+row, ", 2023, ",qnum, ", ", category2, ", ", 
                subQ2,", '", dataset[row,colnum], "'),\n"))#, quote = F)
   }                
@@ -125,7 +135,7 @@ generateSqlMerge <- function(dataset, qnum, colnum, colnumTotal, category, subQ)
   subQ2 <- ifelse(subQ == '', 'NULL',subQ)
   colnumCounter <- colnumTotal - 1 # if we have 3 columns that we want to capture, we would set colnumTotal = 3 in function. We then would choose columns starting at colnum and ending at colnum+(colnumTotal-1). i.e., if columns #144-146 are trying to be merged, there are 3 total columns, and our column subsetting properly reflects [,144:146].
   # start at row 2 because row 1 doesnt represent a real response
-  for (row in 2:nrow(dataset)) {
+  for (row in 1:nrow(dataset)) {
     # combinedResponse <- paste(as.character(dataset[row,colnum:colnum+colnumCounter]),collapse=",", sep = ",")
     values <- apply(dataset[row, colnum:(colnum + colnumCounter)], 1, function(x) ifelse(is.na(x), "", as.character(x)))
     combinedResponse <- paste(values, collapse = ",")
@@ -146,8 +156,7 @@ generateSqlMerge <- function(dataset, qnum, colnum, colnumTotal, category, subQ)
 #assign each unique jurisdicton a specific ID first, mutate a column to be that ID, reference that column wrt the response given so that we handle duplicates / or just delete the incorrect DUPES of primary response
 
 # Open text file, write function output into it without R idiosyncrasies forcing us to use text replace
-### had to add the multiple insert into statements to avoid sql server limit of 1000 inserts. also, one must manually remove the final comma in the last set of values before the next "insert into" statement. I think we may need to insert into SQL pre-tabularized data, or come up with something more elegant.
-### NOTEPAD++ allows for replace over multiple lines, therefore can replace the phrase ",INSERT INTO" and remove the preceding commas for mass insert.
+## had to add the multiple insert into statements to avoid sql server limit of 1000 inserts.
 sink("insertResponsesDetailed2023.txt") 
 cat('INSERT INTO dbo.responses_detail VALUES ')
 generateSql(data, 1, 10, '', 1)
@@ -170,9 +179,9 @@ generateSql(data, 5, 19, '' , 2)
 cat('INSERT INTO dbo.responses_detail VALUES ')
 generateSql(data, 5, 20, '' , 3)
 cat('INSERT INTO dbo.responses_detail VALUES ')
-generateSql(data, 6, 21, '' , 3)
+generateSql(data, 6, 21, '' , 1)
 cat('INSERT INTO dbo.responses_detail VALUES ')
-generateSql(data, 6, 22, '' , 3)
+generateSql(data, 6, 22, '' , 2)
 cat('INSERT INTO dbo.responses_detail VALUES ')
 generateSql(data, 7, 23, '' , '')
 cat('INSERT INTO dbo.responses_detail VALUES ')
@@ -262,11 +271,11 @@ generateSql(data, 11, 134, '' , 10)
 cat('INSERT INTO dbo.responses_detail VALUES ')
 generateSql(data, 12, 135, '' , 1)
 cat('INSERT INTO dbo.responses_detail VALUES ')
-generateSql(data, 12, 136, '' , 1)
+generateSql(data, 12, 136, '' , 2)
 cat('INSERT INTO dbo.responses_detail VALUES ')
-generateSql(data, 12, 137, '' , 1)
+generateSql(data, 12, 137, '' , 3)
 cat('INSERT INTO dbo.responses_detail VALUES ')
-generateSql(data, 12, 138, '' , 1)
+generateSql(data, 12, 138, '' , 4)
 cat('INSERT INTO dbo.responses_detail VALUES ')
 generateSqlMerge(data, 13, 139, 3, '' , 1)
 cat('INSERT INTO dbo.responses_detail VALUES ')
@@ -1320,8 +1329,7 @@ generateSql(data, 80, 758, '', 4)
 cat('INSERT INTO dbo.responses_detail VALUES ')
 generateSql(data, 80, 759, '', 5)
 
-sink() #NEED TO EXCLUDE THE HEADER ROW AS IT GOT RESORTED TO THE LAST JURISDICTION ID AND PLACED IN RESPONSESDETAIL TXT FILE
-
+sink()
 
 generateJurisdictionToCrossSurveyID <- function(dataset, colnum) {
   # start at row 2 because row 1 doesnt represent a real response
@@ -1331,3 +1339,18 @@ generateJurisdictionToCrossSurveyID <- function(dataset, colnum) {
 }
 
 generateJurisdictionToCrossSurveyID(data, 761)
+
+###################
+#_ MODIFY GENERATED SQL TO REMOVE FINAL ROW'S TRAILING COMMA BEFORE THE NEXT COMMAND - INSERT INTO 
+###################
+# Open text file and get the raw text of each line
+text <- readr::read_file("insertResponsesDetailed2023.txt")
+# Define the pattern to replace
+pattern <- ",\r\nINSERT INTO"
+# Perform replacement using str_replace_all
+modified_lines <- str_replace_all(text, pattern, "\nINSERT INTO")
+# Write the modified lines back to a new file
+writeLines(modified_lines, con = "insertResponsesDetailed2023.txt")
+# Console log
+cat("Text file processing complete. Modified content saved")
+#still need to manually remove last comma - get a solution for that later. should be easy
