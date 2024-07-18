@@ -1,6 +1,7 @@
 use iaao_surveys
 go
 
+/* this was made to generate a spreadsheet to do the manual process of figuring out which subQs/categories should be matched with which others from the other survey */
 
 /* basic data required */
 select * from (

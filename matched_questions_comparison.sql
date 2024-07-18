@@ -199,3 +199,11 @@ a.response, b.response
 from #2023 a
 join #2017 b on a.matched_question = b.matched_question and a.cross_survey_id = b.cross_survey_id /* need to be able to join on sub question matches and category matches too */
 
+
+select * from
+(
+select * from #2023 
+UNION ALL 
+SELECT * FROM #2017
+) a
+--where matched_question = 12 and cross_survey_id = 42

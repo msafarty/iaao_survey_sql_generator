@@ -1,36 +1,130 @@
 library(dplyr)
 library(readxl)
 library(stringr)
-data <- readxl::read_xlsx('PTPA Results 3-21-24.xlsx') %>% data.frame()
+library(readr)
+data <- readxl::read_xlsx('051524_PTPA_Responses.xlsx') %>% data.frame()
 #escape apostrophes that may be found in the Excel data; this will mess up SQL
 data <- data.frame(lapply(data, function(x) {
   gsub("'","''",x)
 }))
 
-# unforunately, surveymonkey exports might change the ordering of results per export. So, safest thing to do is order data by the startDate column. After running this script, the endDate column can be used to choose the most recent/complete survey for any jurisdiction with multiple responses provided
-#_____ grab header row (could just remove this? already captured this data)
-data2 <- data[1,]
-#_____ sort non-header rows
-data3 <- data %>% dplyr::arrange(Start.Date) %>% dplyr::filter(!is.na(Respondent.ID))
-#_____ merge both together so that we maintain header row + sorted responses
-data <- rbind(data2, data3)
+data <- data %>% dplyr::arrange(Start.Date)
 
-originalSort <- c(
-  114539706242,  114531145936,  114528657948,  114526904884,  114519901647,  114501089919,  114499189343,  114499180680,  114499171338,  114499135809,  114499124159,  114499123114,  114499108393,  114499055706,  114493814576,  114493802232,  114493784233,  114493684392,  114492783374,  114492764229,  114488212930,  114488136775,  114481970216,  114464461063,  114475460755,  114474180505,  114427148888,  114469329225,  114466868046,  114465962170,  114462303924,  114461883794,  114459146195,  114457273759,  114454847367,  114442462939,  114454039408,  114449559999,  114451745202,  114447220479,  114445275103,  114446304636,  114446198688,  114430142765,  114445038039,  114444388932,  114444214711,  114444136044,  114443881903,  114441444545,  114433800975,  114441493075,  114438952760, 114438778150,  114437800107,  114436385934,  114435867816,  114434810712,  114430684879,  114430421428,  114430116231,  114427409265,  114429344587, 114428402375,  114428378146,  114427908795,  114427479403,  114427412004)
-data5 <- data %>% mutate(customSortID = case_when(
-  Respondent.ID %in% originalSort ~ 1,
-  T ~ 0
-))
-data6<-data5[order(match(data5$Respondent.ID,originalSort))]
+data <- data %>% mutate(jurisdiction_id = case_when(
+  Respondent.ID == 114539706242 ~ 45,
+  Respondent.ID == 114531145936 ~ 49,
+  Respondent.ID == 114528657948 ~ 66,
+  Respondent.ID == 114526904884 ~ 44,
+  Respondent.ID == 114519901647 ~ 8,
+  Respondent.ID == 114501089919 ~ 58,
+  Respondent.ID == 114499189343 ~ 67,
+  Respondent.ID == 114499180680 ~ 34,
+  Respondent.ID == 114499171338 ~ 1,
+  Respondent.ID == 114499135809 ~ 15,
+  Respondent.ID == 114499124159 ~ 61,
+  Respondent.ID == 114499123114 ~ 14,
+  Respondent.ID == 114499108393 ~ 39,
+  Respondent.ID == 114499055706 ~ 48,
+  Respondent.ID == 114493814576 ~ 68,
+  Respondent.ID == 114493802232 ~ 64,
+  Respondent.ID == 114493784233 ~ 56,
+  Respondent.ID == 114493684392 ~ 4,
+  Respondent.ID == 114492783374 ~ 22,
+  Respondent.ID == 114492764229 ~ 42,
+  Respondent.ID == 114488212930 ~ 5,
+  Respondent.ID == 114488136775 ~ 53,
+  Respondent.ID == 114481970216 ~ 18,
+  Respondent.ID == 114464461063 ~ 3,
+  Respondent.ID == 114475460755 ~ 2,
+  Respondent.ID == 114474180505 ~ 45,
+  Respondent.ID == 114427148888 ~ 69,
+  Respondent.ID == 114469329225 ~ 10,
+  Respondent.ID == 114466868046 ~ 70,
+  Respondent.ID == 114465962170 ~ 28,
+  Respondent.ID == 114462303924 ~ 27,
+  Respondent.ID == 114461883794 ~ 71,
+  Respondent.ID == 114459146195 ~ 70,
+  Respondent.ID == 114454039408 ~ 9,
+  Respondent.ID == 114454847367 ~ 72,
+  Respondent.ID == 114442462939 ~ 38,
+  Respondent.ID == 114457273759 ~ 9,
+  Respondent.ID == 114449559999 ~ 73,
+  Respondent.ID == 114451745202 ~ 43,
+  Respondent.ID == 114447220479 ~ 25,
+  Respondent.ID == 114445275103 ~ 17,
+  Respondent.ID == 114446304636 ~ 7,
+  Respondent.ID == 114493802232 ~ 64,
+  Respondent.ID == 114493814576 ~ 68,
+  Respondent.ID == 114445038039 ~ 46,
+  Respondent.ID == 114444388932 ~ 74,
+  Respondent.ID == 114444214711 ~ 11,
+  Respondent.ID == 114444136044 ~ 24,
+  Respondent.ID == 114443881903 ~ 26,
+  Respondent.ID == 114441444545 ~ 52,
+  Respondent.ID == 114433800975 ~ 55,
+  Respondent.ID == 114441493075 ~ 37,
+  Respondent.ID == 114438952760 ~ 35,
+  Respondent.ID == 114493784233 ~ 56,
+  Respondent.ID == 114437800107 ~ 31,
+  Respondent.ID == 114499180680 ~ 34,
+  Respondent.ID == 114435867816 ~ 75,
+  Respondent.ID == 114449559999 ~ 73, #ALREADY captured
+  Respondent.ID == 114430684879 ~ 21, #ID does not exist?
+  Respondent.ID == 114430421428 ~ 40,
+  Respondent.ID == 114466868046 ~ 70,
+  Respondent.ID == 114427409265 ~ 13,
+  Respondent.ID == 114499189343 ~ 67,
+  Respondent.ID == 114428402375 ~ 41,
+  Respondent.ID == 114428378146 ~ 16,
+  Respondent.ID == 114427908795 ~ 54,
+  Respondent.ID == 114427479403 ~ 51,
+  Respondent.ID == 114427412004 ~ 76,
+  Respondent.ID == 114542568363 ~ 6,
+  Respondent.ID == 114578514782 ~ 14,
+  Respondent.ID == 114567064753 ~ 21,
+  Respondent.ID == 114578645759 ~ 23,
+  Respondent.ID == 114567083617 ~ 27,
+  Respondent.ID == 114544497390 ~ 29,
+  Respondent.ID == 114565518891 ~ 30,
+  Respondent.ID == 114573294291 ~ 32,
+  Respondent.ID == 114573275060 ~ 33,
+  Respondent.ID == 114546419581 ~ 44,
+  Respondent.ID == 114554192485 ~ 44,
+  Respondent.ID == 114570863934 ~ 54,
+  Respondent.ID == 114570732691 ~ 65,
+  Respondent.ID == 114564515361 ~ 63,
+  Respondent.ID == 114553829962 ~ 77,
+  Respondent.ID == 114430142765 ~ 68,
+  Respondent.ID == 114434810712 ~ 73,
+  Respondent.ID == 114539993093 ~ 20,
+  Respondent.ID == 114438778150 ~ 56,
+  Respondent.ID == 114540174330 ~ 6,
+  Respondent.ID == 114584307020 ~ 26,
+  Respondent.ID == 114584326384 ~ 40,
+  Respondent.ID == 114588427610 ~ 62,
+  Respondent.ID == 114588585608 ~ 23,
+  Respondent.ID == 114588625531 ~ 36,
+  Respondent.ID == 114588666440 ~ 24,
+  Respondent.ID == 114594126073 ~ 47,
+  Respondent.ID == 114599084302 ~ 78
+  )
+)
+need_jurisdiction_IDs <- data %>% filter(is.na(jurisdiction_id)) %>% filter(!is.na(Respondent.ID))
+print('Script will halt if we have not assigned jursidiction IDs to all survey data')
+stopifnot(nrow(need_jurisdiction_IDs) == 0)
+print('All survey responses have been assigned a jurisdiction_id')
 
-# data[is.na(data)] <- ''
+# Calculate the max start date per jurisdiction ID - consider this, being the most recent submission, as the best data. 
+maxStartDates <- data %>% dplyr::group_by(jurisdiction_id) %>% dplyr::summarise(Start.Date = max(Start.Date))
+# Inner join on the jurisdiction IDs and max start dates to grab the 'best data'
+data <- data %>% dplyr::inner_join(maxStartDates, by = c('jurisdiction_id', 'Start.Date')) %>% filter(!is.na(Respondent.ID))
 
 #create SQL generation function based on data structure
 generateSql <- function(dataset, qnum, colnum, category, subQ) {
   category2 <- ifelse(category == '' , 'NULL',category)
   subQ2 <- ifelse(subQ == '', 'NULL',subQ)
   # start at row 2 because row 1 doesnt represent a real response
-  for (row in 2:nrow(dataset)) {
+  for (row in 1:nrow(dataset)) {
     cat(paste0("(2, ", 2000+row, ", 2023, ",qnum, ", ", category2, ", ", 
                subQ2,", '", dataset[row,colnum], "'),\n"))#, quote = F)
   }                
@@ -41,7 +135,7 @@ generateSqlMerge <- function(dataset, qnum, colnum, colnumTotal, category, subQ)
   subQ2 <- ifelse(subQ == '', 'NULL',subQ)
   colnumCounter <- colnumTotal - 1 # if we have 3 columns that we want to capture, we would set colnumTotal = 3 in function. We then would choose columns starting at colnum and ending at colnum+(colnumTotal-1). i.e., if columns #144-146 are trying to be merged, there are 3 total columns, and our column subsetting properly reflects [,144:146].
   # start at row 2 because row 1 doesnt represent a real response
-  for (row in 2:nrow(dataset)) {
+  for (row in 1:nrow(dataset)) {
     # combinedResponse <- paste(as.character(dataset[row,colnum:colnum+colnumCounter]),collapse=",", sep = ",")
     values <- apply(dataset[row, colnum:(colnum + colnumCounter)], 1, function(x) ifelse(is.na(x), "", as.character(x)))
     combinedResponse <- paste(values, collapse = ",")
@@ -62,8 +156,7 @@ generateSqlMerge <- function(dataset, qnum, colnum, colnumTotal, category, subQ)
 #assign each unique jurisdicton a specific ID first, mutate a column to be that ID, reference that column wrt the response given so that we handle duplicates / or just delete the incorrect DUPES of primary response
 
 # Open text file, write function output into it without R idiosyncrasies forcing us to use text replace
-### had to add the multiple insert into statements to avoid sql server limit of 1000 inserts. also, one must manually remove the final comma in the last set of values before the next "insert into" statement. I think we may need to insert into SQL pre-tabularized data, or come up with something more elegant.
-### NOTEPAD++ allows for replace over multiple lines, therefore can replace the phrase ",INSERT INTO" and remove the preceding commas for mass insert.
+## had to add the multiple insert into statements to avoid sql server limit of 1000 inserts.
 sink("insertResponsesDetailed2023.txt") 
 cat('INSERT INTO dbo.responses_detail VALUES ')
 generateSql(data, 1, 10, '', 1)
@@ -86,9 +179,9 @@ generateSql(data, 5, 19, '' , 2)
 cat('INSERT INTO dbo.responses_detail VALUES ')
 generateSql(data, 5, 20, '' , 3)
 cat('INSERT INTO dbo.responses_detail VALUES ')
-generateSql(data, 6, 21, '' , 3)
+generateSql(data, 6, 21, '' , 1)
 cat('INSERT INTO dbo.responses_detail VALUES ')
-generateSql(data, 6, 22, '' , 3)
+generateSql(data, 6, 22, '' , 2)
 cat('INSERT INTO dbo.responses_detail VALUES ')
 generateSql(data, 7, 23, '' , '')
 cat('INSERT INTO dbo.responses_detail VALUES ')
@@ -178,11 +271,11 @@ generateSql(data, 11, 134, '' , 10)
 cat('INSERT INTO dbo.responses_detail VALUES ')
 generateSql(data, 12, 135, '' , 1)
 cat('INSERT INTO dbo.responses_detail VALUES ')
-generateSql(data, 12, 136, '' , 1)
+generateSql(data, 12, 136, '' , 2)
 cat('INSERT INTO dbo.responses_detail VALUES ')
-generateSql(data, 12, 137, '' , 1)
+generateSql(data, 12, 137, '' , 3)
 cat('INSERT INTO dbo.responses_detail VALUES ')
-generateSql(data, 12, 138, '' , 1)
+generateSql(data, 12, 138, '' , 4)
 cat('INSERT INTO dbo.responses_detail VALUES ')
 generateSqlMerge(data, 13, 139, 3, '' , 1)
 cat('INSERT INTO dbo.responses_detail VALUES ')
@@ -1236,6 +1329,28 @@ generateSql(data, 80, 758, '', 4)
 cat('INSERT INTO dbo.responses_detail VALUES ')
 generateSql(data, 80, 759, '', 5)
 
-
-
 sink()
+
+generateJurisdictionToCrossSurveyID <- function(dataset, colnum) {
+  # start at row 2 because row 1 doesnt represent a real response
+  for (row in 1:nrow(dataset)) {
+    cat(paste0("(2, ", 2000+row, ", 2023, ", dataset[row,colnum], "),\n"))#, quote = F)
+  }                
+}
+
+generateJurisdictionToCrossSurveyID(data, 761)
+
+###################
+#_ MODIFY GENERATED SQL TO REMOVE FINAL ROW'S TRAILING COMMA BEFORE THE NEXT COMMAND - INSERT INTO 
+###################
+# Open text file and get the raw text of each line
+text <- readr::read_file("insertResponsesDetailed2023.txt")
+# Define the pattern to replace
+pattern <- ",\r\nINSERT INTO"
+# Perform replacement using str_replace_all
+modified_lines <- str_replace_all(text, pattern, "\nINSERT INTO")
+# Write the modified lines back to a new file
+writeLines(modified_lines, con = "insertResponsesDetailed2023.txt")
+# Console log
+cat("Text file processing complete. Modified content saved")
+#still need to manually remove last comma - get a solution for that later. should be easy
